@@ -1,0 +1,63 @@
+'use strict';
+
+exports.handler = (event, context, callback) => {
+    const header = `<?xml version="1.0" encoding="UTF-8"?>`;
+    var output = header + `\n<Response>\n<Say>Invalid phone number</Say>\n</Response>`;
+    
+    const query = event.queryStringParameters || {};
+    const reqBody = event.body || {};
+    const callerId = query.callerId;
+    
+    var toNumFromBody;
+    if (Object.keys(reqBody).length > 0){ 
+        var postRequest = reqBody.split("&").map(function(x){return x.split("=")});
+        
+        for( var i = 0, len = postRequest.length; i < len; i++ ) {
+            if( postRequest[i][0] === 'To' ) {
+                toNumFromBody = decodeURIComponent(postRequest[i][1]);
+                break;
+            }
+        }
+    }
+  
+    var toNum;
+    if (query.To){
+        toNum = query.To;    
+    } else if (toNumFromBody) {
+        toNum = toNumFromBody;    
+    }
+
+    console.log("callerId: " + callerId );
+    
+    if (toNum && callerId) {
+        var num = "";
+        var num_e164_pstn = toNum.match("^sip:([+][0-9]{10,14})@");
+        var num_011_pstn = toNum.match("^sip:011([0-9]{10,14})@");
+        var num_00_pstn = toNum.match("^sip:00([0-9]{10,14})@");
+        var num_us_pstn = toNum.match("^sip:[+]?1?([0-9]{10})@");
+        
+        if (num_e164_pstn) {
+            num = num_e164_pstn[1];
+        } else if (num_011_pstn) {
+            num = num_011_pstn[1];
+        } else if (num_00_pstn) {
+            num = num_00_pstn[1];
+        } else if (num_us_pstn) {
+            num = num_us_pstn[1];
+        }
+
+        if (num) { 
+            console.log("Num: " + num);
+            output = header + `\n<Response>\n<Dial answerOnBridge="true" callerId="+` + callerId.trim() + `" hangupOnStar="false" record="do-not-record">+` + num + `</Dial>\n</Response>`;
+        }
+    
+    }
+
+    callback(null, {
+        statusCode: '200',
+        body: output.trim(),
+        headers: {
+            'Content-Type': 'application/xml',
+        },
+    });
+};
