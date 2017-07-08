@@ -6,5 +6,5 @@ Pre-Requisites:
 * Twilio account and [SIP registration](https://www.twilio.com/docs/api/twilio-sip/pv-sip-registration)
 
 Usage:
-* Use the following "Request URL" as "HTTP POST":
+* In Twilio (Home / Voice / SIP Domains / Domains /) use the following "Request URL" as "HTTP POST":
   * https://myapiid.execute-api.us-east-1.amazonaws.com/prod/SIP_Outbound?callerId=14155551234
