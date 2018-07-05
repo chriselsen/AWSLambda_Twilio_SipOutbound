@@ -34,7 +34,7 @@ exports.handler = (event, context, callback) => {
         var num_e164_pstn = toNum.match("^sip:([+][0-9]{10,14})@");
         var num_011_pstn = toNum.match("^sip:011([0-9]{10,14})@");
         var num_00_pstn = toNum.match("^sip:00([0-9]{10,14})@");
-        var num_us_pstn = toNum.match("^sip:[+]?1?([0-9]{10})@");
+        var num_us_pstn = toNum.match("^sip:[+]?(1?[0-9]{10})@");
         
         if (num_e164_pstn) {
             num = num_e164_pstn[1];
